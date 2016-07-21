@@ -23,11 +23,35 @@ $(document).ready(function() {
     .scale(y)
     .orient("left");
   
+  var format = d3.format(',.3f');
+  
+  var tip = d3.tip()
+    .attr('class', 'tip')
+    .html(function(d) {
+      var temp = 8.66 + d.variance;
+      var month = new Array();
+          month[1] = "January";
+          month[2] = "February";
+          month[3] = "March";
+          month[4] = "April";
+          month[5] = "May";
+          month[6] = "June";
+          month[7] = "July";
+          month[8] = "August";
+          month[9] = "September";
+          month[10] = "October";
+          month[11] = "November";
+          month[12] = "December";
+      return "<h3>" + d.year + " - " + month[d.month] + "</h3><p>" + format(temp) + " °C</p><p>" + d.variance + " °C</p>"
+    })
+  
   var map = d3.select("#map")
     .attr('width', width + margin.left + margin.right)
     .attr('height', height + margin.top + margin.bottom)
    .append("g")
     .attr('transform', 'translate(' + margin.left + ', ' + margin.right + ')');
+  
+  map.call(tip);
   
   $.getJSON(url, function(data) {
     var baseTemp = data.baseTemperature;
@@ -39,12 +63,25 @@ $(document).ready(function() {
     
     map.append("g")
       .attr("class", "y axis")
-      .call(yAxis);
+      .call(yAxis)
+     .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", -90)
+      .attr("x", -250)
+      .style("font-size", "20px")
+      .style("font-weight", "bold")
+      .text("Months");
     
     map.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0, " +  height + ")")
-      .call(xAxis);
+      .call(xAxis)
+     .append("text")
+      .attr("y", 50)
+      .attr("x", 550)
+      .style("font-size", "20px")
+      .style("font-weight", "bold")
+      .text("Years");
     
     map.selectAll('.rect')
       .data(data.monthlyVariance)
@@ -68,6 +105,8 @@ $(document).ready(function() {
         if (temp >= 11.6 && temp < 12.7) return '#800000';
         if (temp >= 12.7) return '#ff6600';
         return black;
-      });
+      })
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide);
   });
 });
