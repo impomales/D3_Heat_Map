@@ -8,6 +8,20 @@ $(document).ready(function() {
   
   var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   
+  var legendData = [
+    {x: 0, color: '#6600ff', text: "0"},
+    {x: 50, color: '#0099ff', text: "2.7"},
+    {x: 100, color: '#00ff99', text: "3.9"},
+    {x: 150, color: '#ccff66', text: "5"},
+    {x: 200, color: '#ffff99', text: "6.1"},
+    {x: 250, color: '#ffcc66', text: "7.2"},
+    {x: 300, color: '#ff9933', text: "8.3"},
+    {x: 350, color: '#ff6600', text: "9.4"},
+    {x: 400, color: '#ff0000', text: "10.5"},
+    {x: 450, color: '#800000', text: "11.6"},
+    {x: 500, color: '#330000', text: "12.7"}
+  ]
+  
   var x = d3.scale.linear()
     .range([0, width]);
   
@@ -29,20 +43,7 @@ $(document).ready(function() {
     .attr('class', 'tip')
     .html(function(d) {
       var temp = 8.66 + d.variance;
-      var month = new Array();
-          month[1] = "January";
-          month[2] = "February";
-          month[3] = "March";
-          month[4] = "April";
-          month[5] = "May";
-          month[6] = "June";
-          month[7] = "July";
-          month[8] = "August";
-          month[9] = "September";
-          month[10] = "October";
-          month[11] = "November";
-          month[12] = "December";
-      return "<h3>" + d.year + " - " + month[d.month] + "</h3><p>" + format(temp) + " °C</p><p>" + d.variance + " °C</p>"
+      return "<h3>" + d.year + " - " + months[d.month] + "</h3><p>" + format(temp) + " °C</p><p>" + d.variance + " °C</p>"
     })
   
   var map = d3.select("#map")
@@ -94,7 +95,7 @@ $(document).ready(function() {
       .attr('fill', function(d) {
         var temp = baseTemp + d.variance;
         if (temp >= 0 && temp < 2.7) return '#6600ff';
-        if (temp >= 2.67 && temp < 3.9) return '#0099ff';
+        if (temp >= 2.7 && temp < 3.9) return '#0099ff';
         if (temp >= 3.9 && temp < 5) return '#00ff99';
         if (temp >= 5 && temp < 6.1) return '#ccff66';
         if (temp >= 6.1 && temp < 7.2) return '#ffff99';
@@ -103,10 +104,26 @@ $(document).ready(function() {
         if (temp >= 9.4 && temp < 10.5) return '#ff6600';
         if (temp >= 10.5 && temp < 11.6) return '#ff0000';
         if (temp >= 11.6 && temp < 12.7) return '#800000';
-        if (temp >= 12.7) return '#ff6600';
+        if (temp >= 12.7) return '#330000';
         return black;
       })
       .on('mouseover', tip.show)
       .on('mouseout', tip.hide);
   });
+  
+  var legend = map.selectAll('g')
+   .data(legendData)
+    .enter().append('g');
+  
+  legend.append('rect')
+    .attr('y', 515)
+    .attr('x', function(d) {return 650 + d.x;})
+    .attr('fill', function(d) {return d.color;})
+    .attr('class', 'rect')
+    .attr('width', 50)
+    .attr('height', 25);
+  legend.append('text')
+      .attr('y', 555)
+      .attr('x', function(d) {return 666 + d.x;})
+      .text(function(d) {return d.text})
 });
